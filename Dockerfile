@@ -26,12 +26,12 @@ SHELL ["/bin/bash", "-c"]
 
 # Skipping dynamic version tagging for Railway
 # RUN CURRENTVERSION="$(jq -r '.version' lerna.json)" && \
-  IFS='.-' read -r major minor patch label <<< "$CURRENTVERSION" && \
-  if [ -z "$label" ]; then CURRENTVERSION="$CURRENTVERSION-rc"; fi && \
-  cd /tmp && \
-  NEWVERSION="$(echo $CURRENTVERSION).$(date +'%Y%m%d%H%M%S')" \
-  &&  git checkout -b release-$(date +'%Y%m%d%H%M%S') \
-  && yarn lerna version ${NEWVERSION} -y --no-git-tag-version
+# IFS='.-' read -r major minor patch label <<< "$CURRENTVERSION" && \
+#  if [ -z "$label" ]; then CURRENTVERSION="$CURRENTVERSION-rc"; fi && \
+#  cd /tmp && \
+#  NEWVERSION="$(echo $CURRENTVERSION).$(date +'%Y%m%d%H%M%S')" \
+#  &&  git checkout -b release-$(date +'%Y%m%d%H%M%S') \
+#  && yarn lerna version ${NEWVERSION} -y --no-git-tag-version
 
 RUN git config user.email "test@mail.com"  \
     && git config user.name "test" && git add .  \
