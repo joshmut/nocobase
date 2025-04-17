@@ -95,3 +95,15 @@ RUN mkdir -p /app/nocobase/storage/uploads/ && echo "$COMMIT_HASH" >> /app/nocob
 COPY ./docker/nocobase/docker-entrypoint.sh /app/
 
 CMD ["/app/docker-entrypoint.sh"]
+# Unpack the app
+COPY --from=builder /app/nocobase.tar.gz /app/nocobase.tar.gz
+RUN mkdir -p /app/nocobase && tar -zxf /app/nocobase.tar.gz -C /app/nocobase
+
+# Copy entrypoint script
+COPY ./docker-entrypoint.sh /app/nocobase/docker-entrypoint.sh
+RUN chmod +x /app/nocobase/docker-entrypoint.sh
+
+# Set working directory and entrypoint
+WORKDIR /app/nocobase
+CMD ["/app/nocobase/docker-entrypoint.sh"]
+
