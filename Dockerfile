@@ -1,4 +1,5 @@
 FROM node:20-bookworm as builder
+
 ARG VERDACCIO_URL=http://host.docker.internal:10104/
 ARG COMMIT_HASH
 ARG APPEND_PRESET_LOCAL_PLUGINS
@@ -9,6 +10,7 @@ ENV PLUGINS_DIRS=${PLUGINS_DIRS}
 
 RUN apt-get update && apt-get install -y jq expect
 
+# Optional: Only include if you're publishing to a local Verdaccio registry
 RUN expect <<EOD
 spawn npm adduser --registry $VERDACCIO_URL
 expect {
@@ -20,7 +22,7 @@ EOD
 
 WORKDIR /tmp
 COPY . /tmp
-RUN  yarn install && yarn build --no-dts
+RUN yarn install && yarn build --no-dts
 
 SHELL ["/bin/bash", "-c"]
 
@@ -33,12 +35,12 @@ SHELL ["/bin/bash", "-c"]
 #  &&  git checkout -b release-$(date +'%Y%m%d%H%M%S') \
 #  && yarn lerna version ${NEWVERSION} -y --no-git-tag-version
 
-RUN git config user.email "test@mail.com"  \
-    && git config user.name "test" && git add .  \
-    && git commit -m "chore(versions): test publish packages"
-RUN yarn release:force --registry $VERDACCIO_URL
+# Git commit step removed — not supported on Railway
+RUN echo "Skipping git commit step — no .git context on Railway"
 
+RUN yarn release:force --registry $VERDACCIO_URL
 RUN yarn config set registry $VERDACCIO_URL
+
 WORKDIR /app
 RUN cd /app \
   && yarn config set network-timeout 600000 -g \
@@ -54,6 +56,9 @@ RUN cd /app \
   && rm -rf nocobase.tar.gz \
   && tar -zcf ./nocobase.tar.gz -C /app/my-nocobase-app .
 
+# -------------------------
+# FINAL PRODUCTION IMAGE
+# -------------------------
 
 FROM node:20-bookworm-slim
 
