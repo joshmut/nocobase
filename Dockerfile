@@ -38,8 +38,12 @@ SHELL ["/bin/bash", "-c"]
 # Git commit step removed — not supported on Railway
 RUN echo "Skipping git commit step — no .git context on Railway"
 
-RUN yarn release:force --registry $VERDACCIO_URL
-RUN yarn config set registry $VERDACCIO_URL
+# Skip publishing to Verdaccio – not needed for deployment
+RUN echo "Skipping yarn release:force for deployment"
+
+# Use default public registry
+RUN yarn config set registry https://registry.yarnpkg.com
+
 
 WORKDIR /app
 RUN cd /app \
