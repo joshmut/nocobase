@@ -24,7 +24,8 @@ RUN  yarn install && yarn build --no-dts
 
 SHELL ["/bin/bash", "-c"]
 
-RUN CURRENTVERSION="$(jq -r '.version' lerna.json)" && \
+# Skipping dynamic version tagging for Railway
+# RUN CURRENTVERSION="$(jq -r '.version' lerna.json)" && \
   IFS='.-' read -r major minor patch label <<< "$CURRENTVERSION" && \
   if [ -z "$label" ]; then CURRENTVERSION="$CURRENTVERSION-rc"; fi && \
   cd /tmp && \
